@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'cart_provider.dart';
+part of 'cart_products.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -41,7 +41,7 @@ final class CartProductsProvider
   }
 }
 
-String _$cartProductsHash() => r'463881368b1a35f1074f6dd37365e5507e294b62';
+String _$cartProductsHash() => r'c6ec146e99623b2f0fbc17d71343ebb61c5ad329';
 
 abstract class _$CartProducts extends $Notifier<Set<Product>> {
   Set<Product> build();
@@ -101,44 +101,4 @@ final class TotalCartPriceProvider
   }
 }
 
-String _$totalCartPriceHash() => r'36dd9d5b1da466d8e2a167a5a317cd3f62b37782';
-
-@ProviderFor(numberCartItems)
-const numberCartItemsProvider = NumberCartItemsProvider._();
-
-final class NumberCartItemsProvider extends $FunctionalProvider<int, int, int>
-    with $Provider<int> {
-  const NumberCartItemsProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'numberCartItemsProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$numberCartItemsHash();
-
-  @$internal
-  @override
-  $ProviderElement<int> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  int create(Ref ref) {
-    return numberCartItems(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(int value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<int>(value),
-    );
-  }
-}
-
-String _$numberCartItemsHash() => r'7c0c698ee037f2a26fc90ec7837268a931387cd7';
+String _$totalCartPriceHash() => r'06e470cd305eafc2caf7e2ad4a2d5f671b0216e7';

@@ -1,4 +1,4 @@
-import 'package:auto_sales/models/product_model.dart';
+import 'package:auto_sales/model/product.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AdminService {
@@ -9,11 +9,13 @@ class AdminService {
         toFirestore: (Product product, _) => product.toFirebaseStore(),
       );
 
-  static Future<void> addToFirebaseStore(Product product) async {
-    await ref.doc(product.id).set(product);
+  //Saved Data to FirebaseStore
+  static Future<void> addToStore(Product product) async {
+    await ref.doc().set(product);
   }
 
-  static Future<QuerySnapshot<Product>> fetchProduct() {
+  //Fetch Data from Store
+  static Future<QuerySnapshot<Product>> fetchFromStore() {
     return ref.get();
   }
 }

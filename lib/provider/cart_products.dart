@@ -1,45 +1,38 @@
-import 'package:auto_sales/models/product_model.dart';
+import 'package:auto_sales/model/product.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'cart_provider.g.dart';
+part 'cart_products.g.dart';
 
 @riverpod
 class CartProducts extends _$CartProducts {
+  //adding default products in the Cart
   @override
   Set<Product> build() {
     return {};
   }
 
   //Adding Product to Cart
-  void addToCart(Product product) {
+  void addCartProduct(Product product) {
     if (!state.contains(product)) {
       state = {...state, product};
     }
   }
 
-  //Remove Product From Cart
-  void removeFromCart(Product product) {
+  //Removing Products from Cart
+  void removeItem(Product product) {
     if (state.contains(product)) {
       state = {...state}..remove(product);
     }
   }
 }
 
-//Generate total Price of Cart Product
+//Total Price of Items in the Cart
 @riverpod
 double totalCartPrice(ref) {
-  final cartTotal = ref.watch(cartProductsProvider);
   double total = 0;
-  for (Product product in cartTotal) {
+  final cartPrices = ref.watch(cartProductsProvider);
+  for (Product product in cartPrices) {
     total += product.price;
   }
   return total;
-}
-
-//Generate number of item in the Cart
-@riverpod
-int numberCartItems(ref) {
-  final cartItems = ref.watch(cartProductsProvider);
-
-  return cartItems.length;
 }

@@ -4,22 +4,21 @@ class Product {
   final String id;
   final String title;
   final double price;
-  final String imageUrl;
+  final String image;
 
   Product({
     required this.id,
-    required this.title,
     required this.price,
-    required this.imageUrl,
+    required this.title,
+    required this.image,
   });
 
-  //Adding Products to Firestore
+  //Adding Product to Firebase
   Map<String, dynamic> toFirebaseStore() {
-    return {"title": title, "price": price, "imageUrl": imageUrl};
+    return {'title': title, 'price': price, 'image': image};
   }
 
-  //Process data from FirebaseStore
-
+  //From the FirebaseStore
   factory Product.fromFirebaseStore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
     SnapshotOptions? options,
@@ -27,11 +26,10 @@ class Product {
     final data = snapshot.data()!;
     Product product = Product(
       id: snapshot.id,
-      title: data['title'],
       price: data['price'],
-      imageUrl: data['imageUrl'],
+      title: data['title'],
+      image: data['image'],
     );
-
     return product;
   }
 }
