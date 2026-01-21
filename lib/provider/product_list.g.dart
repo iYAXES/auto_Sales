@@ -46,4 +46,4 @@ final class ProductsProvider
   }
 }
 
-String _$productsHash() => r'a389ba1a681f9e89719980cbaefd4aefa8e97738';
+String _$productsHash() => r'f77f8592c1546b5f9d28ba5af454641229179393';

@@ -1,4 +1,3 @@
-import 'dart:ffi';
 
 import 'package:auto_sales/provider/cart_products.dart';
 import 'package:auto_sales/provider/product_list.dart';
@@ -13,6 +12,7 @@ class Homescreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final asyncAllProducts = ref.watch(productsProvider);
+    // OR final AsyncValue<List<Product>> asyncAllProducts = ref.watch(productsProvider); 
     final cartItems = ref.watch(cartProductsProvider);
     return Scaffold(
       backgroundColor: Colors.white,

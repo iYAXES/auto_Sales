@@ -11,6 +11,7 @@ class CartProducts extends _$CartProducts {
     return {};
   }
 
+
   //Adding Product to Cart
   void addCartProduct(Product product) {
     if (!state.contains(product)) {
