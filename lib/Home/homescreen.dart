@@ -25,73 +25,91 @@ class Homescreen extends ConsumerWidget {
         padding: EdgeInsets.all(16),
         child: asyncAllProducts.when(
           data: (allProducts) {
-            return GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 20,
-                mainAxisSpacing: 20,
-                childAspectRatio: .9,
-              ),
-              itemCount: allProducts.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  decoration: BoxDecoration(
-                    color: Colors.blueGrey.withValues(alpha: .14),
-                  ),
-                  padding: EdgeInsetsDirectional.symmetric(
-                    vertical: 20,
-                    horizontal: 20,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      allProducts[index].image.isEmpty
-                          ? Icon(Icons.image_not_supported_outlined, size: 60)
-                          : Image.asset(
-                              allProducts[index].image,
-                              width: 60,
-                              height: 60,
-                            ),
-                      Text(allProducts[index].title),
-                      Text(
-                        '\$${allProducts[index].price}',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-
-                      if (!cartItems.contains(allProducts[index]))
-                        TextButton(
-                          style: TextButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                          ),
-                          onPressed: () {
-                            ref
-                                .read(cartProductsProvider.notifier)
-                                .addCartProduct(allProducts[index]);
-                          },
-                          child: Text(
-                            'add to cart',
-                            style: TextStyle(color: Colors.orange[800]),
-                          ),
-                        ),
-                      if (cartItems.contains(allProducts[index]))
-                        TextButton(
-                          style: TextButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                          ),
-                          onPressed: () {
-                            ref
-                                .read(cartProductsProvider.notifier)
-                                .removeItem(allProducts[index]);
-                          },
-                          child: Text(
-                            'remove',
-                            style: TextStyle(color: Colors.orange[800]),
-                          ),
-                        ),
-                    ],
-                  ),
-                );
+            return RefreshIndicator(
+              onRefresh: () async {
+                ref.invalidate(productsProvider);
               },
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 20,
+                  mainAxisSpacing: 20,
+                  childAspectRatio: .9,
+                ),
+                itemCount: allProducts.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: Colors.blueGrey.withValues(alpha: .14),
+                    ),
+                    padding: EdgeInsetsDirectional.symmetric(
+                      vertical: 20,
+                      horizontal: 20,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // allProducts[index].image.isEmpty
+                        //     ? Icon(Icons.image_not_supported_outlined, size: 60)
+                        //     : Image.asset(
+                        //         allProducts[index].image,
+                        //         width: 60,
+                        //         height: 60,
+                        //       ),
+                        Image.network(
+                          height: 60,
+                          width: 60,
+
+                          allProducts[index].image,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return CircularProgressIndicator();
+                          },
+                        ),
+              
+                        //
+                        Text(allProducts[index].title),
+                        Text(
+                          '\$${allProducts[index].price}',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+
+                        if (!cartItems.contains(allProducts[index]))
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                            ),
+                            onPressed: () {
+                              ref
+                                  .read(cartProductsProvider.notifier)
+                                  .addCartProduct(allProducts[index]);
+                            },
+                            child: Text(
+                              'add to cart',
+                              style: TextStyle(color: Colors.orange[800]),
+                            ),
+                          ),
+                        if (cartItems.contains(allProducts[index]))
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                            ),
+                            onPressed: () {
+                              ref
+                                  .read(cartProductsProvider.notifier)
+                                  .removeItem(allProducts[index]);
+                            },
+                            child: Text(
+                              'remove',
+                              style: TextStyle(color: Colors.orange[800]),
+                            ),
+                          ),
+                      ],
+                    ),
+                  );
+                },
+              ),
             );
           },
           loading: () => Center(child: CircularProgressIndicator()),

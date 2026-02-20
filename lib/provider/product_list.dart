@@ -62,6 +62,5 @@ Future<List<Product>> products(ref) async {
  
     final prodFromStore = await AdminService.fetchFromStore();
   return prodFromStore.docs.map((prod) => prod.data()).toList();
-  
-  
+
 }

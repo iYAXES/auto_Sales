@@ -1,6 +1,7 @@
 import 'package:auto_sales/model/product.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+
 class AdminService {
   static final ref = FirebaseFirestore.instance
       .collection('products')
@@ -18,4 +19,7 @@ class AdminService {
   static Future<QuerySnapshot<Product>> fetchFromStore() {
     return ref.get();
   }
+
+ 
+
 }

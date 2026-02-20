@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:auto_sales/admin/admin_service.dart';
 import 'package:auto_sales/model/product.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 var uuid = const Uuid();
@@ -18,38 +22,42 @@ class _AdminHomeState extends State<AdminHome> {
   double _productPrice = 0;
   bool _isLoading = false;
 
-  void onUpload() async {
-    if (_formGlobalKey.currentState!.validate()) {
+
+File? _selectedImage;
+  final ImagePicker _picker = ImagePicker();
+  final supabase = Supabase.instance.client;
+  //
+  Future<void> pickImage() async {
+    final picked = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 70,
+    );
+
+    if (picked != null) {
       setState(() {
-        _isLoading = true;
-      });
-      _formGlobalKey.currentState!.save();
-
-      Product newProduct = Product(
-        id: uuid.v4(),
-        price: _productPrice,
-        title: _productName,
-        image: "",
-      );
-      await AdminService.addToStore(newProduct);
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.green,
-            behavior: SnackBarBehavior.floating,
-            content: Text('Product added successfully!!'),
-          ),
-        );
-      }
-
-      _formGlobalKey.currentState!.reset();
-
-      setState(() {
-        _isLoading = false;
+        _selectedImage = File(picked.path);
       });
     }
   }
+
+  //Upload Image to the Firebase Cloud Store
+  Future<String> uploadImage(String productId) async {
+    final fileName = 'images/$productId.jpg';
+    //
+    await supabase.storage
+        .from('products')
+        .upload(
+          fileName,
+          _selectedImage!,
+          fileOptions: FileOptions(upsert: true, contentType: 'image/jpeg'),
+        );
+
+    //The Public URL
+    return supabase.storage.from('products').getPublicUrl(fileName);
+  }
+  //
+
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +78,25 @@ class _AdminHomeState extends State<AdminHome> {
               key: _formGlobalKey,
               child: Column(
                 children: [
+                  Center(
+                    child: GestureDetector(
+                      onTap: pickImage,
+                      child: Container(
+                        alignment: Alignment.center,
+                        height: 150,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Colors.white54,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.grey),
+                        ),
+                        child: _selectedImage == null
+                            ? Text('Tap to select image')
+                            : Image.file(_selectedImage!, fit: BoxFit.cover),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
                   TextFormField(
                     decoration: InputDecoration(
                       label: Text('Product name'),
@@ -131,7 +158,53 @@ class _AdminHomeState extends State<AdminHome> {
                       ),
                       backgroundColor: Colors.blue.shade400,
                     ),
-                    onPressed: onUpload,
+
+                    //
+                    onPressed: () async {
+                      if (_formGlobalKey.currentState!.validate()) {
+                        if (_selectedImage == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Please select an image')),
+                          );
+                          return;
+                        }
+                        //
+                        setState(() {
+                          _isLoading = true;
+                        });
+                        _formGlobalKey.currentState!.save();
+
+                        final productId = uuid.v4();
+
+                        //Get the upload image URL here
+                        final imageUrl = await uploadImage(productId);
+
+                        //Saving all the Products
+                        Product newProduct = Product(
+                          id: productId,
+                          price: _productPrice,
+                          title: _productName,
+                          image: imageUrl,
+                        );
+                        await AdminService.addToStore(newProduct);
+
+                        if (!mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.green,
+                            behavior: SnackBarBehavior.floating,
+                            content: Text('Product added successfully!!'),
+                          ),
+                        );
+
+                        _formGlobalKey.currentState!.reset();
+
+                        setState(() {
+                          _selectedImage = null;
+                          _isLoading = false;
+                        });
+                      }
+                    },
                     child: Text(
                       'Upload item',
                       style: TextStyle(color: Colors.white),
